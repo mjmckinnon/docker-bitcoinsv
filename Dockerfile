@@ -69,4 +69,4 @@ RUN \
 ENV DATADIR="/data"
 EXPOSE 8333
 VOLUME /data
-CMD ["bitcoind", "-printtoconsole", "-excessiveblocksize=2000000000", "-maxstackmemoryusageconsensus=200000000"]
+CMD ["bitcoind", "-printtoconsole", "-excessiveblocksize=2000000000", "-maxstackmemoryusageconsensus=200000000", "-minminingtxfee=0.00000500"]
