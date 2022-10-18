@@ -1,0 +1,25 @@
+diff --git a/src/txn_recent_rejects.cpp b/src/txn_recent_rejects.cpp
+index 2d67116dc..68313f77a 100644
+--- a/src/txn_recent_rejects.cpp
++++ b/src/txn_recent_rejects.cpp
+@@ -4,6 +4,8 @@
+ 
+ #include "txn_recent_rejects.h"
+ 
++#include <mutex>
++
+ CTxnRecentRejects::CTxnRecentRejects() {
+     // Create a bloom filter
+     mpRecentRejects = std::make_unique<CRollingBloomFilter>(120000, 0.000001);
+diff --git a/src/txn_util.h b/src/txn_util.h
+index fb4fdac40..b4bd6928b 100644
+--- a/src/txn_util.h
++++ b/src/txn_util.h
+@@ -6,6 +6,7 @@
+ 
+ #include "primitives/transaction.h"
+ 
++#include <mutex>
+ #include <shared_mutex>
+ #include <unordered_set>
+ 

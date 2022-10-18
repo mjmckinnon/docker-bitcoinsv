@@ -1,7 +1,7 @@
 FROM mjmckinnon/ubuntubuild as builder
 
 # Bitcoin SV
-ARG VERSION="v1.0.8"
+ARG VERSION="v1.0.11"
 ARG GITREPO="https://github.com/bitcoin-sv/bitcoin-sv.git"
 ARG GITNAME="bitcoin-sv"
 ARG COMPILEFLAGS="--disable-tests --disable-bench --enable-cxx --disable-shared --with-pic --disable-wallet --without-gui --without-miniupnpc"
@@ -11,8 +11,14 @@ ENV DEBIAN_FRONTEND="noninteractive"
 WORKDIR /root
 RUN git clone ${GITREPO} --branch ${VERSION}
 WORKDIR /root/${GITNAME}
+# Bitcoin-SV v1.0.11 has a compiler error under Ubuntu 22.04
+# so as a kludge this patch file inserts '#include <mutex>'
+# to two files: src/txn_util.h and src/txn_recent_rejects.cpp
+COPY ./bsv-mutex.patch ./
 RUN \
-    echo "** compile **" \
+    echo "** patching files (kludge) **" \
+    && git apply ./bsv-mutex.patch \
+    && echo "** compile **" \
     && ./autogen.sh \
     && ./configure CXXFLAG="-O2" LDFLAGS=-static-libstdc++ ${COMPILEFLAGS} \
     && make \
@@ -23,11 +29,12 @@ RUN \
     && echo "** removing extra lib files **" \
     && find /dist-files -name "lib*.la" -delete \
     && find /dist-files -name "lib*.a" -delete
+    # No need to clean up, this build image is discarded
     # && cd .. && rm -rf ${GITREPO}
 
 # Final stage
-FROM ubuntu:20.04
-LABEL maintainer="Michael J. McKinnon <mjmckinnon@gmail.com>"
+FROM ubuntu:22.04
+LABEL maintainer="Michael J. McKinnon<mjmckinnon@gmail.com>"
 
 # Put our entrypoint script in
 COPY ./docker-entrypoint.sh /usr/local/bin/
@@ -47,12 +54,12 @@ RUN \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
     gosu \
-    libboost-filesystem1.71.0 \
-    libboost-thread1.71.0 \
+    libboost-filesystem1.74.0 \
+    libboost-thread1.74.0 \
     libevent-2.1-7 \
     libevent-pthreads-2.1-7 \
-    libboost-program-options1.71.0 \
-    libboost-chrono1.71.0 \
+    libboost-program-options1.74.0 \
+    libboost-chrono1.74.0 \
     libczmq4 \
     && apt-get clean autoclean \
     && apt-get autoremove --yes \
