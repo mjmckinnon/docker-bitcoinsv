@@ -1,14 +1,14 @@
 # Docker Image for Bitcoin SV (Satoshi Vision)
 
 This is a docker image for [Bitcoin-SV](https://github.com/bitcoin-sv/bitcoin-sv) which uses the sourcecode from the official
-repository and builds from source, so that this image can be reasonably trusted; unlike many other images which are not always
+repository and builds from that source, so this image can be reasonably trusted; unlike many other images which are not always
 obvious about whether or not other malicious artefacts have been inserted.
 
-Current release builds from the tag: v1.0.11
+Current release builds from the tag: v1.0.13
 The build and final image is based on: Ubuntu 22.04.
 
-Note: For whatever reason bitcoin-sv v1.0.11 does not compile on Ubuntu 22.04 without fixing a couple of errors in the BSV source
-code and the Dockerfile applies a patch to two files (inserts #include <mutex> in two places).
+Note: Previously bitcoin-sv v1.0.11 did not compile on Ubuntu 22.04 without fixing some errors in the BSV source code but
+this seems to have been fixed now. Previous commit in this repo applied a patch (inserts #include <mutex> in two places).
 
 ## Usage in docker-compose
 
